@@ -6,10 +6,13 @@ pipeline {
     }
     stages {
         stage('Build') {
-            agent { 
-                docker { 
-                    image 'golang' 
-                }
+            dockerNode(golang){
+                //okidoki
+              }
+
+
+             }
+
             }
             steps {
                 // Create our project directory.

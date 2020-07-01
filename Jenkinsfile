@@ -5,10 +5,12 @@ pipeline {
         GOCACHE = "/tmp"
     }
     stages {
+        
+        
+        
         stage('Build') {
             dockerNode(golang){
                 //okidoki
-              }
 
 
              }
@@ -23,6 +25,9 @@ pipeline {
                 sh 'go build'               
             }     
         }
+        
+        
+        
         stage('Test') {
             agent { 
                 docker { 

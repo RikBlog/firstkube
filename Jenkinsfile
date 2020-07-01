@@ -1,72 +1,39 @@
 pipeline {
-    agent any
-    environment {
-        registry = "magalixcorp/k8scicd"
-        GOCACHE = "/tmp"
+  agent any
+  stages {
+    stage('Docker Build') {
+      steps {
+        sh "docker build -t kmlaydin/podinfo:${env.BUILD_NUMBER} ."
+      }
     }
-    stages {
-        
-        
-        
-        stage('Build') {
-            dockerNode(golang){
-                //okidoki
-
-
-             }
-
-                        steps {
-                // Create our project directory.
-                sh 'cd ${GOPATH}/src'
-                sh 'mkdir -p ${GOPATH}/src/hello-world'
-                // Copy all files in our Jenkins workspace to our project directory.                
-                sh 'cp -r ${WORKSPACE}/* ${GOPATH}/src/hello-world'
-                // Build the app.
-                sh 'go build'               
-            }     
+    stage('Docker Push') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
+          sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
+          sh "docker push kmlaydin/podinfo:${env.BUILD_NUMBER}"
         }
-        
-        
-        
-        stage('Test') {
-            agent { 
-                docker { 
-                    image 'golang' 
-                }
-            }
-            steps {                 
-                // Create our project directory.
-                sh 'cd ${GOPATH}/src'
-                sh 'mkdir -p ${GOPATH}/src/hello-world'
-                // Copy all files in our Jenkins workspace to our project directory.                
-                sh 'cp -r ${WORKSPACE}/* ${GOPATH}/src/hello-world'
-                // Remove cached test results.
-                sh 'go clean -cache'
-                // Run Unit Tests.
-                sh 'go test ./... -v -short'            
-            }
-        }
-        stage('Publish') {
-            environment {
-                registryCredential = 'dockerhub'
-            }
-            steps{
-                script {
-                    def appimage = docker.build registry + ":$BUILD_NUMBER"
-                    docker.withRegistry( '', registryCredential ) {
-                        appimage.push()
-                        appimage.push('latest')
-                    }
-                }
-            }
-        }
-        stage ('Deploy') {
-            steps {
-                script{
-                    def image_id = registry + ":$BUILD_NUMBER"
-                    sh "ansible-playbook  playbook.yml --extra-vars \"image_id=${image_id}\""
-                }
-            }
-        }
+      }
     }
+    stage('Docker Remove Image') {
+      steps {
+        sh "docker rmi kmlaydin/podinfo:${env.BUILD_NUMBER}"
+      }
+    }
+    stage('Apply Kubernetes Files') {
+      steps {
+          withKubeConfig([credentialsId: 'kubeconfig']) {
+          sh 'cat deployment.yaml | sed "s/{{BUILD_NUMBER}}/$BUILD_NUMBER/g" | kubectl apply -f -'
+          sh 'kubectl apply -f service.yaml'
+        }
+      }
+  }
+}
+post {
+    success {
+      slackSend(message: "Pipeline is successfully completed.")
+    }
+    failure {
+      slackSend(message: "Pipeline failed. Please check the logs.")
+    }
+}
 }

@@ -1,0 +1,12 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: devbakkie-config
+spec:
+  capacity:
+    storage: 1Gi
+  hostPath:
+    path: /mnt/data/devbakkie/config
+  accessModes:
+    - ReadWriteOnce
+    

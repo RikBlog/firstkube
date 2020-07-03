@@ -24,6 +24,10 @@ pipeline {
           withKubeConfig([credentialsId: 'kubeconfigFile']) {
           sh 'cat deployment.yaml | sed "s/{{BUILD_NUMBER}}/$BUILD_NUMBER/g" | kubectl apply -f -'
           sh 'kubectl apply -f service.yaml'
+          sh 'kubectl apply -f volume-devbakkie-data.yaml'
+          sh 'kubectl apply -f volume-devbakkie-config.yaml'
+          sh 'kubectl apply -f claim-devbakkie-config.yaml'
+          sh 'kubectl apply -f claim-devbakkie-data.yaml'
         }
       }
   }

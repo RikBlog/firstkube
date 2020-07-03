@@ -8,6 +8,6 @@ spec:
     app: devbakkie
   ports:
   - protocol: TCP
-    nodePort: 30300
+    nodePort: 
     port: 4444
     targetPort: 4444

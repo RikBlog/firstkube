@@ -1,9 +1,13 @@
-FROM node:10-alpine
+FROM ubuntu:latest
+MAINTAINER Rik Blog 
 
-RUN mkdir /app
-COPY index.js /app
-WORKDIR /app
-RUN npm install express
-EXPOSE 4444
+# Install cron
+RUN apt-get update && apt-get install -y cron
 
-CMD ["node", "index.js"]
+# Add files
+ADD run.sh /run.sh
+ADD entrypoint.sh /entrypoint.sh
+ 
+RUN chmod +x /run.sh /entrypoint.sh
+
+ENTRYPOINT /entrypoint.sh

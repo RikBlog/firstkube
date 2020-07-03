@@ -13,5 +13,3 @@ BASH_ENV=/container.env
 
 crontab scheduler.txt
 cron -f
-
-service apache2 start

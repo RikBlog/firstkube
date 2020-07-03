@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: podinfo-deployment
+  name: devbakkie-deployment
   labels:
-    app: podinfo
+    app: devbakkie
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: podinfo
+      app: devbakkie
   template:
     metadata:
       labels:
-        app: podinfo
+        app: devbakkie
     spec:
       containers:
-      - name: podinfo
-        image: kmlaydin/podinfo:{{BUILD_NUMBER}}
+      - name: devbakkie
+        image: rikblog/devbakkie:{{BUILD_NUMBER}}
         imagePullPolicy: Always
         ports:
         - containerPort: 4444

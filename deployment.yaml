@@ -14,12 +14,27 @@ spec:
       labels:
         app: devbakkie
     spec:
+      volumes: 
+       - name: devbakkie-data
+         persistentVolumeClaim:
+          claimName: devbakkie-data
+       - name: devbakkie-config
+         persistentVolumeClaim:
+          claimName: devbakkie-config  
       containers:
       - name: devbakkie
         image: rikblog/devbakkie:{{BUILD_NUMBER}}
         imagePullPolicy: Always
         ports:
-        - containerPort: 4444
+        - containerPort: 80
+        volumeMounts:
+        - name: devbakkie-config
+          mountPath: /tmp
+        - name: devbakkie-data
+          mountPath: - name: spotweb-config
+              mountPath: /config
+            - name: spotweb-www
+              mountPath: /var/www/html
         env:
         - name: MY_NODE_NAME
           valueFrom:

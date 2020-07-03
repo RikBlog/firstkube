@@ -12,6 +12,10 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y tzdata && \
   ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
   dpkg-reconfigure -f noninteractive tzdata
 
+RUN apt-get install -y apache2
+
+
+
 # Add files
 ADD run.sh /run.sh
 ADD entrypoint.sh /entrypoint.sh

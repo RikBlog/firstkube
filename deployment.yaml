@@ -31,10 +31,7 @@ spec:
         - name: devbakkie-config
           mountPath: /tmp
         - name: devbakkie-data
-          mountPath: - name: spotweb-config
-              mountPath: /config
-            - name: spotweb-www
-              mountPath: /var/www/html
+          mountPath: /var/www/html
         env:
         - name: MY_NODE_NAME
           valueFrom:

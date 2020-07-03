@@ -5,7 +5,12 @@ MAINTAINER Rik Blog
 RUN apt-get update && apt-get install -y cron 
 RUN apt-get install -y nano
 
-
+ENV TZ 'Europe/Amsterdam'
+RUN echo $TZ > /etc/timezone && \
+  apt-get update && apt-get install -y tzdata && \
+  rm /etc/localtime && \
+  ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+  dpkg-reconfigure -f noninteractive tzdata
 
 # Add files
 ADD run.sh /run.sh
